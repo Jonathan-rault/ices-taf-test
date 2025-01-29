@@ -7,6 +7,7 @@
 ##### GETTING STOCK INFOS (stock name & years)
 
 source("current-run-parameters.R")
+source("r-utils/utils-path.R")
 
 
 ##### LIBRARIES
@@ -21,28 +22,29 @@ library(CREDO.utils)
 icesTAF::mkdir("output")
 
 
-##### PATH TO ALL BOOT/DATA USED
+##### PATH TO BOOT/DATA USED
 
-path_referentiels <- "./boot/data/REFS"
+path_data <- get_boot_data_path()
 
 
 ##### READING USEFULL TABLES FROM BOOT/DATA
 
-refs <- path_referentiels |>
+refs <- path_data$referentiels |>
   my_referentiels_load(tables = c("stocks_ices", "stocks_ices_area"))
 
 
-##### BUIDING ICES STOCK
+#### BUIDING ICES STOCK
 
 current_stock <- stock |>
   stock_ices_infos_create(refs$stocks_ices, refs$stocks_ices_area)
 
-input_dir <- paste("model", current_stock$ices_group, current_stock$name, sep = "/")
+stock_path <- current_stock |>
+  compute_stock_taf_path(years)
 
 
 ##### GETTING CURRENT STOCK DATA
 
-raised_data <- readRDS(file = paste0(input_dir, "/", "raised_data.rds"))
+raised_data <- readRDS(file = paste0(stock_path$model, "/", "raised_data.rds"))
 
 
 ##### SAVING FUNCTION
@@ -53,7 +55,7 @@ years_saving_outputs <- function(selected_years) {
 
   folder_name <- paste(range(selected_years) |> unique(), collapse = "-")
 
-  output_dir <- paste("output", current_stock$ices_group, current_stock$name, folder_name, sep = "/")
+  output_dir <- paste(stock_path$output, folder_name, sep = "/")
 
   icesTAF::mkdir(output_dir)
 

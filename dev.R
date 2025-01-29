@@ -10,5 +10,8 @@ citation("CREDO.utils")
 
 icesTAF::taf.boot(force = TRUE)
 
-## va effacer les autres stocks :(
+## pour ne pas effacer
 icesTAF::source.all(clean = FALSE)
+
+## pour effacer
+icesTAF::source.all(clean = TRUE)

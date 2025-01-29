@@ -1,0 +1,104 @@
+---
+title: "stock report"
+lang: fr-FR #en-EN
+fontsize: 11pt 
+author: 
+  - Jonathan Rault
+geometry : margin=1.5cm, showframe=false
+# date: "26 mai 1983" # if commented will use the current date
+# bibliography: ../template-new/bib_example.bib # example of bibliography
+# csl: ./template/nature.csl # for a custom bibliography display style [see e.g. https://www.zotero.org/styles]
+papersize: letter # can be changed to a4
+output: 
+  pdf_document:
+    latex_engine: pdflatex
+    fig_crop: true
+    toc: true # table of contents display
+    toc_depth: 3
+    number_sections: true
+    keep_tex: false
+    df_print: kable
+    citation_package: default # do not work with others : to investigate
+    highlight: default # chunk display style [default,tango,pygments,kate,monochrome,espresso,zenburn,haddock]
+    # pandoc_args: [ "--highlight-style=./template/custom_theme.theme" ] # a custom highlight style to improve
+header-includes: ## SOME ADDITIONAL DOCUMENT FORMATTING OPTIONS
+  - \def\affiliation{PDG - RBE - Hisseo}
+  - \def\typedoc{report} # document type
+  - \def\simpleifremerlogo{N} # set to Y to use the ifremer logo without SIH text / other text will put no logo
+  - \def\templatedir{./boot/data/template/} # default template directory
+  # - \def\footshorttitle{my own bottom page title} # for adding a custom bottom page title [default is document title]
+  # - \def\myfirstpagelogo{./template/financeurs_dauphins.png} # can also use custom ones, fixed height used for display
+  # - \def\removequalitylogo{} # to remove the quality logo on main page, uncomment
+  - \input{./boot/data/template/ifremer_template.sty}
+# knit: (function(input, ...) {
+#     rmarkdown::render(
+#       input,
+#       output_dir = '.',
+#       output_format = 'pdf_document'
+#     )
+#   })
+---
+
+```{r script parameters, include=T, echo=F, eval=T, cache=F}
+
+```
+
+```{r displaying options, include=T, echo=F, eval=T, cache=F}
+ 
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(fig.align = 'center')
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE) # require formatR r-package ?
+
+```
+
+```{r library used, include=F, echo=F, eval=T, cache=F}
+
+library(dplyr)
+library(kableExtra)
+library(arrow)
+library(CREDO.utils)
+
+```
+
+```{r sourcing usefull infos, include=T, echo=F, eval=T, cache=F}
+
+source("current-run-parameters.R")
+source("r-utils/utils-path.R")
+
+```
+
+```{r path, include=T, echo=F, eval=T, cache=F}
+
+path_data <- get_boot_data_path()
+
+```
+
+```{r initialization, include=T, echo=F, eval=T, cache=F}
+
+refs <- path_data$referentiels |>
+  my_referentiels_load(tables = c("stocks_ices", "stocks_ices_area"))
+
+current_stock <- stock |>
+  stock_ices_infos_create(refs$stocks_ices, refs$stocks_ices_area)
+
+stock_path <- current_stock |>
+  compute_stock_taf_path(years)
+
+```
+
+# general informations
+
+- stock name : `r current_stock$name`
+
+- stock name : `r current_stock$ices_taxa_fao`
+
+- scientific species : `r current_stock$ifr_species`
+
+- ices area : `r current_stock$ices_area`
+
+- size reference measure : `r current_stock$ifr_reference_measure`
+
+- size unit : `r current_stock$ifr_size_unit`
+
+
+## sampling efforts 

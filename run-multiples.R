@@ -2,7 +2,7 @@ year_start <- 2021
 year_end <- 2023
 
 stocks <- c(
-  #"sol.27.8ab",
+  "sol.27.8ab",
   "bss.27.8ab"
 )
 
@@ -13,6 +13,6 @@ for(stock in stocks) {
  
   writeLines(single_run_parameters, "current-run-parameters.R")
 
-  icesTAF::source.all(clean = TRUE)
+  icesTAF::source.all(clean = FALSE) # FALSE : otherwise erase other stock outputs
 
 }

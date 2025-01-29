@@ -7,6 +7,7 @@
 ##### GETTING STOCK INFOS (stock name & years)
 
 source("current-run-parameters.R")
+source("r-utils/utils-path.R")
 
 
 ##### LIBRARIES
@@ -21,29 +22,30 @@ library(CREDO.utils)
 icesTAF::mkdir("model")
 
 
-##### PATH TO ALL BOOT/DATA USED
+##### PATH TO BOOT/DATA USED
 
-path_referentiels <- "./boot/data/REFS"
+path_data <- get_boot_data_path()
 
 
 ##### READING USEFULL TABLES FROM BOOT/DATA
 
-refs <- path_referentiels |>
+refs <- path_data$referentiels |>
   my_referentiels_load(tables = c("stocks_ices", "stocks_ices_area"))
 
 
-##### BUIDING ICES STOCK
+#### BUIDING ICES STOCK
 
 current_stock <- stock |>
   stock_ices_infos_create(refs$stocks_ices, refs$stocks_ices_area)
 
-input_dir <- paste("data", current_stock$ices_group, current_stock$name, sep = "/")
+stock_path <- current_stock |>
+  compute_stock_taf_path(years)
 
 
 ##### GETTING CURRENT STOCK DATA
 
-sampling_prep <- readRDS(file = paste0(input_dir, "/", "sampling_prep.rds"))
-sacrois_prep <- readRDS(file = paste0(input_dir, "/", "sacrois_prep.rds"))
+sampling_prep <- readRDS(file = paste0(stock_path$data, "/", "sampling_prep.rds"))
+sacrois_prep <- readRDS(file = paste0(stock_path$data, "/", "sacrois_prep.rds"))
 
 
 ##### raising data
@@ -57,7 +59,7 @@ raised_landings <- data_raise_prep |>
 
 ##### SAVING OUTPUTS
 
-output_dir <- paste("model", current_stock$ices_group, current_stock$name, sep = "/")
+output_dir <- stock_path$model
 
 icesTAF::mkdir(output_dir)
 

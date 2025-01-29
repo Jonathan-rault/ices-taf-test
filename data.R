@@ -6,6 +6,7 @@
 ##### GETTING STOCK INFOS (stock name & years)
 
 source("current-run-parameters.R")
+source("r-utils/utils-path.R")
 
 
 ##### LIBRARIES
@@ -15,6 +16,11 @@ library(dplyr)
 library(CREDO.utils)
 
 
+##### WHEN AVAILABLE IN BOOT LIBRARIES
+
+# taf.library(CREDO.utils)
+
+
 ##### MAKING OUTPUT FOLDER
 
 icesTAF::mkdir("data")
@@ -22,14 +28,12 @@ icesTAF::mkdir("data")
 
 ##### PATH TO BOOT/DATA USED
 
-path_data_free3_obsmer <- "./boot/data/FREE3"
-path_data_sacrois <- "./boot/data/SACROIS"
-path_referentiels <- "./boot/data/REFS"
+path_data <- get_boot_data_path()
 
 
 ##### READING USEFULL TABLES FROM BOOT/DATA
 
-refs <- path_referentiels |>
+refs <- path_data$referentiels |>
   my_referentiels_load(tables = c("stocks_ices", "stocks_ices_area"))
 
 
@@ -38,7 +42,8 @@ refs <- path_referentiels |>
 current_stock <- stock |>
   stock_ices_infos_create(refs$stocks_ices, refs$stocks_ices_area)
 
-ices_divisions <- current_stock$ices_area
+stock_path <- current_stock |>
+  compute_stock_taf_path(years)
 
 
 ##### ADDITIONAL PARAMETERS PARAMETERS
@@ -49,10 +54,10 @@ sacrois_strate_fields <- c("ANNEE", "SECT_COD_SACROIS_NIV3", "METIER_DCF_5_COD")
 
 ##### READING DATA
 
-free3_obsmer <- path_data_free3_obsmer |>
+free3_obsmer <- path_data$free3_obsmer |>
   entrepot_read_dataset("free3-obsmer", is_dataset_path = TRUE)
 
-sacrois <- path_data_sacrois |>
+sacrois <- path_data$sacrois |>
   entrepot_open_dataset("sacrois", is_dataset_path = TRUE) |>
   filter(ANNEE %in% years) |>
   select(ANNEE, MAREE_DATE_RET, METIER_DCF_5_COD, SECT_COD_SACROIS_NIV3, SECT_COD_SACROIS_NIV5, ESP_COD_FAO, QUANT_POIDS_VIF_SACROIS) |>
@@ -67,7 +72,7 @@ free3_obsmer_subset <- free3_obsmer |>
   free3_obsmer_filter_dcf_programs() |>
   free3_obsmer_filter_marees(ANNEE %in% years) |>
   free3_obsmer_add_season() |>
-  free3_obsmer_filter_table("operation_peche", ZONE %in% ices_divisions, filter_marees = TRUE)
+  free3_obsmer_filter_table("operation_peche", ZONE %in% current_stock$ices_area, filter_marees = TRUE)
 
 sampling_prep <- free3_obsmer_subset |>
   free3_raising_obsmer_prepare_data(
@@ -93,7 +98,7 @@ sacrois_prep <- sacrois |>
 
 ##### SAVING OUTPUTS
 
-output_dir <- paste("data", current_stock$ices_group, current_stock$name, sep = "/")
+output_dir <- stock_path$data
 
 icesTAF::mkdir(output_dir)
 
