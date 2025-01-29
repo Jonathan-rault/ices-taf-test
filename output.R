@@ -51,7 +51,7 @@ years_saving_outputs <- function(selected_years) {
 
   # selected_years <- 2021
 
-  folder_name <- paste(range(selected_years), collapse = "-")
+  folder_name <- paste(range(selected_years) |> unique(), collapse = "-")
 
   output_dir <- paste("output", current_stock$ices_group, current_stock$name, folder_name, sep = "/")
 
@@ -62,14 +62,17 @@ years_saving_outputs <- function(selected_years) {
     pull(ID_STRATE)
 
   sampling_infos <- raised_data$fishing_strata_list |>
-    filter(ID_STRATE %in% id_strata_year) |>
+    filter(ID_STRATE %in% selected_strata) |>
     left_join(raised_data$fishing_strata_infos) |>
     select(ANNEE, ZONE, METIER_DCF5, FO_SAMPLED, N_SAMPLED_VAL_PR, N_SAMPLED_VAL_PNR)
   
   saveRDS(sampling_infos, file = paste0(output_dir, "/", "sampling_infos.rds"))
 
   size_structures <- raised_data$fishing_strata_list |>
-    filter(ID_STRATE %in% id_strata_year) 
+    filter(ID_STRATE %in% selected_strata) |>
+    left_join(raised_data$full_strata_measures)
+
+  saveRDS(size_structures, file = paste0(output_dir, "/", "size_structures.rds"))
 
 }
 
