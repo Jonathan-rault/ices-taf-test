@@ -56,6 +56,7 @@ knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE) # requir
 library(dplyr)
 library(kableExtra)
 library(arrow)
+library(ggplot2)
 library(CREDO.utils)
 
 ```
@@ -86,11 +87,21 @@ stock_path <- current_stock |>
 
 ```
 
+```{r, include=T, echo=F, eval=T, cache=F}
+
+sampling_infos <- readRDS(file = paste0(stock_path$output_series, "/", "sampling_infos.rds"))
+size_structures <- readRDS(file = paste0(stock_path$output_series, "/", "size_structures.rds"))
+
+last_year <- max(sampling_infos$ANNEE)
+
+```
+
+\newpage
 # general informations
 
 - stock name : `r current_stock$name`
 
-- stock name : `r current_stock$ices_taxa_fao`
+- commercial species: `r current_stock$ices_taxa_fao`
 
 - scientific species : `r current_stock$ifr_species`
 
@@ -102,3 +113,33 @@ stock_path <- current_stock |>
 
 
 ## sampling efforts 
+
+```{r, include=T, echo=F, eval=T, cache=F, fig.height=6, fig.width=8, out.width = "75%"}
+
+to_plot <- sampling_infos |>
+  dplyr::rename(LAN = N_SAMPLED_VAL_PR, DIS = N_SAMPLED_VAL_PNR) |>
+  tidyr::pivot_longer(c("LAN", "DIS"), names_to = "LAN_DIS")
+
+my_plot <- CREDO.utils::ggplot_bar(
+  my_table = to_plot,
+  var_x = "ANNEE",
+  var_y = "value",
+  var_bar = "LAN_DIS"
+) +
+ggplot_custom_theme() +
+theme(legend.position="top", legend.title = element_blank())
+
+my_plot
+
+```
+
+```{r, include=T, echo=F, eval=T, cache=F}
+
+to_print <- sampling_infos |>
+  filter(ANNEE == last_year)
+
+CREDO.utils::latex_table_print(to_print, "individual measurements last year (lan / dis)")
+
+```
+
+## size structure

@@ -1,7 +1,8 @@
-year_start <- 2021
+year_start <- 2020
 year_end <- 2023
 
 stocks <- c(
+  "sol.27.7h-k", 
   "sol.27.8ab",
   "bss.27.8ab"
 )
