@@ -36,7 +36,7 @@ refs <- path_data$referentiels |>
 #### BUIDING ICES STOCK
 
 current_stock <- stock |>
-  stock_ices_infos_create(refs$stocks_ices, refs$stocks_ices_area)
+  stock_ices_object_create(refs$stocks_ices, refs$stocks_ices_area)
 
 stock_path <- current_stock |>
   compute_stock_taf_path(years)
@@ -51,7 +51,7 @@ sacrois_prep <- readRDS(file = paste0(stock_path$data, "/", "sacrois_prep.rds"))
 ##### raising data
 
 data_raise_prep <- sampling_prep |>
-  free3_raising_obsmer_raise_to_sampled_marees(population_fields = "ESPECE")
+  free3_raising_obsmer_raise_samples(population_fields = "SEXE")
 
 raised_landings <- data_raise_prep |>
   free3_raising_raise_to_landings(sacrois_prep, field_landings = "LANDINGS_G")

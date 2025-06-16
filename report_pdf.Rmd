@@ -80,7 +80,7 @@ refs <- path_data$referentiels |>
   my_referentiels_load(tables = c("stocks_ices", "stocks_ices_area"))
 
 current_stock <- stock |>
-  stock_ices_infos_create(refs$stocks_ices, refs$stocks_ices_area)
+  stock_ices_object_create(refs$stocks_ices, refs$stocks_ices_area)
 
 stock_path <- current_stock |>
   compute_stock_taf_path(years)
@@ -117,14 +117,13 @@ last_year <- max(sampling_infos$ANNEE)
 ```{r, include=T, echo=F, eval=T, cache=F, fig.height=6, fig.width=8, out.width = "75%"}
 
 to_plot <- sampling_infos |>
-  dplyr::rename(LAN = N_SAMPLED_VAL_PR, DIS = N_SAMPLED_VAL_PNR) |>
-  tidyr::pivot_longer(c("LAN", "DIS"), names_to = "LAN_DIS")
+  filter(FO_VAL_SPP != 0)
 
 my_plot <- CREDO.utils::ggplot_bar(
   my_table = to_plot,
   var_x = "ANNEE",
-  var_y = "value",
-  var_bar = "LAN_DIS"
+  var_y = "N_SAMPLED_VAL",
+  var_bar = NULL
 ) +
 ggplot_custom_theme() +
 theme(legend.position="top", legend.title = element_blank())
@@ -143,3 +142,23 @@ CREDO.utils::latex_table_print(to_print, "individual measurements last year (lan
 ```
 
 ## size structure : landings
+
+
+
+```{r, include=T, echo=F, eval=T, cache=F, fig.height=6, fig.width=8, out.width = "75%"}
+
+# to_plot <- sampling_infos |>
+#   filter(FO_VAL_SPP != 0)
+
+# my_plot <- CREDO.utils::ggplot_bar(
+#   my_table = to_plot,
+#   var_x = "ANNEE",
+#   var_y = "N_SAMPLED_VAL",
+#   var_bar = NULL
+# ) +
+# ggplot_custom_theme() +
+# theme(legend.position="top", legend.title = element_blank())
+
+# my_plot
+
+```

@@ -40,7 +40,7 @@ refs <- path_data$referentiels |>
 #### BUIDING ICES STOCK
 
 current_stock <- stock |>
-  stock_ices_infos_create(refs$stocks_ices, refs$stocks_ices_area)
+  stock_ices_object_create(refs$stocks_ices, refs$stocks_ices_area)
 
 stock_path <- current_stock |>
   compute_stock_taf_path(years)
@@ -55,13 +55,13 @@ sacrois_strate_fields <- c("ANNEE", "SECT_COD_SACROIS_NIV3", "METIER_DCF_5_COD")
 ##### READING DATA
 
 free3_obsmer <- path_data$free3_obsmer |>
-  entrepot_read_dataset("free3-obsmer", is_dataset_path = TRUE)
+  datalake_read("free3-obsmer", is_dataset_path = TRUE)
 
 sacrois <- path_data$sacrois |>
-  entrepot_open_dataset("sacrois", is_dataset_path = TRUE) |>
+  datalake_open("sacrois", is_dataset_path = TRUE) |>
   filter(ANNEE %in% years) |>
   select(ANNEE, MAREE_DATE_RET, METIER_DCF_5_COD, SECT_COD_SACROIS_NIV3, SECT_COD_SACROIS_NIV5, ESP_COD_FAO, QUANT_POIDS_VIF_SACROIS) |>
-  entrepot_collect_dataset()
+  datalake_collect()
 
 
 ##### PREPARING DATA : AT-SEA SAMPLING
@@ -72,19 +72,32 @@ free3_obsmer_subset <- free3_obsmer |>
   free3_obsmer_filter_dcf_programs() |>
   free3_obsmer_filter_marees(ANNEE %in% years) |>
   free3_obsmer_add_season() |>
-  free3_obsmer_filter_table("operation_peche", ZONE %in% current_stock$ices_area, filter_marees = TRUE)
+  free3_obsmer_filter_table("operation_peche", ZONE %in% current_stock$ices_area, filter_marees = TRUE) |>
+  free3_obsmer_add_efforts()
 
 sampling_prep <- free3_obsmer_subset |>
   free3_raising_obsmer_prepare_data(
-    species = current_stock$ifr_species,
-    catch_cat = c("PR", "PNR"),
-    reference_measure = current_stock$ifr_reference_measure,
-    size_unit = current_stock$ifr_size_unit,
+    species = current_stock$ices_species,
+    catch_cat = c("PR"),
+    reference_measure = NULL,
+    size_unit = "cm",
     fishing_strata_fields = free3_strate_fields,
     filter_valid = TRUE,
     use_only_weight = FALSE,
-    output_details = TRUE
+    output_details = FALSE
   )
+
+# sampling_prep <- free3_obsmer_subset |>
+#   free3_raising_obsmer_prepare_data(
+#     species = current_stock$ifr_species,
+#     catch_cat = c("PR", "PNR"),
+#     reference_measure = current_stock$ifr_reference_measure,
+#     size_unit = current_stock$ifr_size_unit,
+#     fishing_strata_fields = free3_strate_fields,
+#     filter_valid = TRUE,
+#     use_only_weight = FALSE,
+#     output_details = TRUE
+#   )
 
 
 ##### PREPARING DATA : COMMERCIAL LANDINGS

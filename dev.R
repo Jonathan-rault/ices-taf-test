@@ -6,6 +6,8 @@ icesTAF::taf.skeleton()
 
 citation("CREDO.utils")
 
+icesTAF::draft.data()
+
 ## source = jonathan-rault/CREDO.utils@<<HASH_DU_COMMIT>>
 
 icesTAF::taf.boot(force = TRUE)

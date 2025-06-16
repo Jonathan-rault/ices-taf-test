@@ -35,7 +35,7 @@ refs <- path_data$referentiels |>
 #### BUIDING ICES STOCK
 
 current_stock <- stock |>
-  stock_ices_infos_create(refs$stocks_ices, refs$stocks_ices_area)
+  stock_ices_object_create(refs$stocks_ices, refs$stocks_ices_area)
 
 stock_path <- current_stock |>
   compute_stock_taf_path(years)
@@ -61,7 +61,7 @@ icesTAF::mkdir(paste0(output_dir, "/pdf"))
 
 summary_samples <- sampling_infos |>
   group_by(ANNEE, ZONE) |>
-  summarize_at(c("FO_SAMPLED", "N_SAMPLED_VAL_PR", "N_SAMPLED_VAL_PNR"), sum) |>
+  summarize_at(c("FO_VAL_SPP", "N_SAMPLED_VAL"), sum, na.rm = TRUE) |>
   ungroup()
 
 icesTAF::write.taf(summary_samples, dir = paste0(output_dir, "/elements"), quote = TRUE)

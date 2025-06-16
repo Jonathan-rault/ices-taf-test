@@ -36,7 +36,7 @@ refs <- path_data$referentiels |>
 #### BUIDING ICES STOCK
 
 current_stock <- stock |>
-  stock_ices_infos_create(refs$stocks_ices, refs$stocks_ices_area)
+  stock_ices_object_create(refs$stocks_ices, refs$stocks_ices_area)
 
 stock_path <- current_stock |>
   compute_stock_taf_path(years)
@@ -64,9 +64,10 @@ years_saving_outputs <- function(selected_years) {
     pull(ID_STRATE)
 
   sampling_infos <- raised_data$fishing_strata_list |>
+    left_join(raised_data$fishing_strata_infos, by = "ID_STRATE") |>
     filter(ID_STRATE %in% selected_strata) |>
     left_join(raised_data$fishing_strata_infos) |>
-    select(ANNEE, ZONE, METIER_DCF5, FO_SAMPLED, N_SAMPLED_VAL_PR, N_SAMPLED_VAL_PNR)
+    select(ANNEE, ZONE, METIER_DCF5, FO_VAL_SPP, N_SAMPLED_VAL)
   
   saveRDS(sampling_infos, file = paste0(output_dir, "/", "sampling_infos.rds"))
 
