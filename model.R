@@ -64,3 +64,4 @@ output_dir <- stock_path$model
 icesTAF::mkdir(output_dir)
 
 saveRDS(raised_landings, file = paste0(output_dir, "/", "raised_data.rds"))
+saveRDS(sacrois_prep, file = paste0(output_dir, "/", "sacrois_landings.rds"))

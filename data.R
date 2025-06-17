@@ -87,22 +87,11 @@ sampling_prep <- free3_obsmer_subset |>
     output_details = FALSE
   )
 
-# sampling_prep <- free3_obsmer_subset |>
-#   free3_raising_obsmer_prepare_data(
-#     species = current_stock$ifr_species,
-#     catch_cat = c("PR", "PNR"),
-#     reference_measure = current_stock$ifr_reference_measure,
-#     size_unit = current_stock$ifr_size_unit,
-#     fishing_strata_fields = free3_strate_fields,
-#     filter_valid = TRUE,
-#     use_only_weight = FALSE,
-#     output_details = TRUE
-#   )
-
-
 ##### PREPARING DATA : COMMERCIAL LANDINGS
 
 sacrois_prep <- sacrois |>
+  filter(ESP_COD_FAO %in% current_stock$taxa_fao) |>
+  filter(SECT_COD_SACROIS_NIV3 %in% current_stock$ices_area) |>
   group_by_at(sacrois_strate_fields) |>
   summarize(LANDINGS_G = sum(QUANT_POIDS_VIF_SACROIS, na.rm = TRUE) * 1000) |>
   ungroup() |>

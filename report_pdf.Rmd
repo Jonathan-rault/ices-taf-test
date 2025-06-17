@@ -91,6 +91,7 @@ stock_path <- current_stock |>
 
 sampling_infos <- readRDS(file = paste0(stock_path$output_series, "/", "sampling_infos.rds"))
 size_structures <- readRDS(file = paste0(stock_path$output_series, "/", "size_structures.rds"))
+landings <- readRDS(file = paste0(stock_path$model, "/", "sacrois_landings.rds"))
 
 last_year <- max(sampling_infos$ANNEE)
 
@@ -99,11 +100,11 @@ last_year <- max(sampling_infos$ANNEE)
 \newpage
 # general informations
 
-- stock name : `r current_stock$name`
+- stock name : `r current_stock$stock_name`
 
-- commercial species: `r current_stock$ices_taxa_fao`
+- commercial species: `r current_stock$taxa_fao`
 
-- scientific species : `r current_stock$ifr_species`
+- scientific species : `r current_stock$ices_species` (`r current_stock$ices_aphia`)
 
 - ices area : `r current_stock$ices_area`
 
@@ -111,6 +112,25 @@ last_year <- max(sampling_infos$ANNEE)
 
 - size unit : `r current_stock$ifr_size_unit`
 
+
+## captures
+
+```{r, include=T, echo=F, eval=T, cache=F}
+
+to_plot <- landings
+
+my_plot <- CREDO.utils::ggplot_bar(
+  my_table = landings,
+  var_x = "ANNEE",
+  var_y = "LANDINGS_G",
+  var_bar = "ZONE"
+) +
+ggplot_custom_theme() +
+theme(legend.position="top", legend.title = element_blank())
+
+my_plot
+
+```
 
 ## sampling efforts 
 
@@ -143,22 +163,18 @@ CREDO.utils::latex_table_print(to_print, "individual measurements last year (lan
 
 ## size structure : landings
 
-
-
 ```{r, include=T, echo=F, eval=T, cache=F, fig.height=6, fig.width=8, out.width = "75%"}
 
-# to_plot <- sampling_infos |>
-#   filter(FO_VAL_SPP != 0)
+my_plot <- CREDO.utils::ggplot_bar(
+  my_table = size_structures,
+  var_x = "SIZE_CLASS",
+  var_y = "N_RAISED_POP",
+  var_bar = NULL,
+  var_grid_x = "ANNEE"
+) +
+ggplot_custom_theme() +
+theme(legend.position="top", legend.title = element_blank())
 
-# my_plot <- CREDO.utils::ggplot_bar(
-#   my_table = to_plot,
-#   var_x = "ANNEE",
-#   var_y = "N_SAMPLED_VAL",
-#   var_bar = NULL
-# ) +
-# ggplot_custom_theme() +
-# theme(legend.position="top", legend.title = element_blank())
-
-# my_plot
+my_plot
 
 ```

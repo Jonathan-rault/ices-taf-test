@@ -31,7 +31,7 @@ get_boot_data_path <- function() {
 #'
 compute_stock_taf_path <- function(stock_infos, years) {
 
-  sub_folder <- paste(stock_infos$ices_group, stock_infos$name, sep = "/")
+  sub_folder <- paste(stock_infos$ices_group, stock_infos$stock_name, sep = "/")
 
   res <- list(
     data = paste("data", sub_folder, sep = "/"),
